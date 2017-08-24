@@ -1,0 +1,74 @@
+Comment !
+	Program:    Greatest_Common_Divisor
+	Student:     Bryan Oliande
+	Date Due:        3/24/15
+	Class:       CSCI 241
+	Instructor:  Mr. Ding
+	Description: Calculates GCD
+!
+
+INCLUDE Irvine32.inc
+
+.data
+
+prompt BYTE "Enter a 32-bit number:  ",0
+result BYTE "Greatest common divisor is: ",0
+
+
+.code
+main PROC
+	mov  edx,OFFSET prompt
+    call WriteString
+	call ReadInt	;value is in eax
+	mov ebx,eax		;saving for use in CalcGCD
+	mov  edx,OFFSET prompt
+    call WriteString
+	call ReadInt	;value is in eax
+	xchg eax,ebx	;eax = first value (X), ebx = second value (Y)
+	call CalcGcd	;GCD in eax
+	mov edx,OFFSET result
+	call WriteString
+	call WriteDec
+	call crlf
+	call WaitMsg
+
+	exit
+
+main ENDP
+
+;------------------------------------------------
+CalcGcd PROC
+; Receives: Two 32-bit integers (eax == x, ebx == y)
+; Returns: GCD in eax
+;------------------------------------------------
+
+	cmp eax,0 ;	x < 0?
+	jl	negX	;	yes, set x = abs(x)
+	jmp cont	;no, continue
+	
+	negX:
+		neg eax
+		
+	cont: 
+		cmp ebx,0	;	y < 0?
+		jl negY		;yes, set y = abs(y)
+		jmp L1	;no, continue
+
+	negY:
+		neg ebx
+	
+	L1:
+		mov edx,0	;clear dividend, high
+		div ebx		;EDX:EAX/EBX, quotient in EAX, remainder (n) in edx i.e. n = x % y
+		mov eax,ebx	;x=y
+		mov ebx,edx	;y=n
+		cmp ebx,0	;y=0?
+		je quit		;yes, exit loop
+		jmp L1	;no, continue loop
+
+	quit:
+		ret
+CalcGcd ENDP
+
+
+END main
